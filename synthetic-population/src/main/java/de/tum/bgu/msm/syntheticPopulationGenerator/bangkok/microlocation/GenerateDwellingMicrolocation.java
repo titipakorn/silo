@@ -8,6 +8,14 @@ import de.tum.bgu.msm.syntheticPopulationGenerator.properties.PropertiesSynPop;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+import org.matsim.api.core.v01.Coord;
+import org.matsim.core.utils.geometry.CoordUtils;
+import org.matsim.core.utils.geometry.CoordinateTransformation;
+import org.matsim.core.utils.geometry.transformations.TransformationFactory;
+import org.osgeo.proj4j.BasicCoordinateTransform;
+import org.osgeo.proj4j.CRSFactory;
+import org.osgeo.proj4j.CoordinateReferenceSystem;
+import org.osgeo.proj4j.ProjCoordinate;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,11 +48,18 @@ public class GenerateDwellingMicrolocation {
         logger.info("   Start Selecting the building to allocate the dwelling");
         //Select the building to allocate the dwelling
         int errorBuilding = 0;
+        CoordinateReferenceSystem fromCRS = new CRSFactory().createFromName("EPSG:4326");
+        CoordinateReferenceSystem toCRS = new CRSFactory().createFromName("EPSG:32647");
+        BasicCoordinateTransform transformer = new BasicCoordinateTransform(fromCRS,toCRS);
         for (Dwelling dd: dataContainer.getRealEstateDataManager().getDwellings()) {
             int zoneID = dd.getZoneId();
             Zone zone = dataContainer.getGeoData().getZones().get(zoneID);
             if (zoneBuildingMap.get(zoneID) == null){
-                dd.setCoordinate(zone.getRandomCoordinate(SiloUtil.getRandomObject()));
+                Coordinate coordinate = zone.getRandomCoordinate(SiloUtil.getRandomObject());
+                ProjCoordinate result = new ProjCoordinate();
+                result = transformer.transform(new ProjCoordinate(coordinate.x,coordinate.y),result);
+                Coordinate coordinate1= new Coordinate(result.x,result.y);
+                dd.setCoordinate(coordinate1);
                 errorBuilding++;
                 continue;
             }

@@ -7,6 +7,11 @@ import de.tum.bgu.msm.models.demography.education.EducationModelImpl;
 import de.tum.bgu.msm.models.demography.marriage.MarriageModelImpl;
 import de.tum.bgu.msm.models.modeChoice.CommuteModeChoiceWithoutCarOwnership;
 import de.tum.bgu.msm.models.modeChoice.SimpleCommuteModeChoice;
+import de.tum.bgu.msm.run.data.person.PersonFactoryBkk;
+import de.tum.bgu.msm.run.models.BirthModelBkk;
+import de.tum.bgu.msm.run.models.EducationModelBkk;
+import de.tum.bgu.msm.run.models.InOutMigrationBkk;
+import de.tum.bgu.msm.run.models.MarriageModelBkk;
 import de.tum.bgu.msm.run.models.carOwnership.CreateCarOwnershipBangkok;
 import de.tum.bgu.msm.run.models.realEstate.BangkokPricingStrategy;
 import de.tum.bgu.msm.models.relocation.migration.InOutMigrationImpl;
@@ -55,6 +60,8 @@ import de.tum.bgu.msm.utils.SiloUtil;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
 import org.matsim.core.scenario.ScenarioUtils;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
+
 
 public class ModelBuilderBangkok {
 
@@ -63,13 +70,13 @@ public class ModelBuilderBangkok {
 
 
 
-    public static ModelContainer getModelContainerForBangkok(DefaultDataContainer dataContainer, Properties properties, Config config) {
+    public static ModelContainer getModelContainerForBangkok(DataContainerWithSchools dataContainer, Properties properties, Config config) {
 
         PersonFactory ppFactory = dataContainer.getHouseholdDataManager().getPersonFactory();
         HouseholdFactory hhFactory = dataContainer.getHouseholdDataManager().getHouseholdFactory();
         DwellingFactory ddFactory = dataContainer.getRealEstateDataManager().getDwellingFactory();
 
-        final BirthModelImpl birthModel = new BirthModelImpl(dataContainer, ppFactory, properties, new DefaultBirthStrategy(), SiloUtil.provideNewRandom());
+        final BirthModelBkk birthModel = new BirthModelBkk(dataContainer, ppFactory, properties, new DefaultBirthStrategy(), SiloUtil.provideNewRandom());
 
         BirthdayModel birthdayModel = new BirthdayModelImpl(dataContainer, properties, SiloUtil.provideNewRandom());
 
@@ -92,7 +99,7 @@ public class ModelBuilderBangkok {
 
         DriversLicenseModel driversLicenseModel = new DriversLicenseModelImpl(dataContainer, properties, new DefaultDriversLicenseStrategy(), SiloUtil.provideNewRandom());
 
-        EducationModel educationModel = new EducationModelImpl(dataContainer, properties, SiloUtil.provideNewRandom());
+        EducationModel educationModel = new EducationModelBkk(dataContainer, properties, SiloUtil.provideNewRandom());
 
         EmploymentModel employmentModel = new EmploymentModelImpl(dataContainer, properties, SiloUtil.provideNewRandom());
 
@@ -111,13 +118,13 @@ public class ModelBuilderBangkok {
 
         ConstructionOverwrite constructionOverwrite = new ConstructionOverwriteImpl(dataContainer, ddFactory, properties, SiloUtil.provideNewRandom());
 
-        InOutMigration inOutMigration = new InOutMigrationImpl(dataContainer, employmentModel, movesModel,
-                carOwnershipModel, driversLicenseModel, properties, SiloUtil.provideNewRandom());
+        InOutMigration inOutMigration = new InOutMigrationBkk(dataContainer, employmentModel, movesModel,
+                carOwnershipModel, driversLicenseModel, properties);
 
         DemolitionModel demolition = new DemolitionModelImpl(dataContainer, movesModel,
                 inOutMigration, properties, new DefaultDemolitionStrategy(), SiloUtil.provideNewRandom());
 
-        MarriageModel marriageModel = new MarriageModelImpl(dataContainer, movesModel, inOutMigration,
+        MarriageModel marriageModel = new MarriageModelBkk(dataContainer, movesModel, inOutMigration,
                 carOwnershipModel, hhFactory, properties, new DefaultMarriageStrategy(), SiloUtil.provideNewRandom());
 
 

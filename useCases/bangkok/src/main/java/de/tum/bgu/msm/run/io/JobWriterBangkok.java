@@ -45,9 +45,9 @@ public class JobWriterBangkok implements JobWriter {
 
             Coordinate coordinate = jj.getCoordinate();
             pwj.print(",");
-            pwj.print(0);
+            pwj.print(coordinate.x);
             pwj.print(",");
-            pwj.print(0);
+            pwj.print(coordinate.y);
 
             pwj.print(",");
             pwj.print(0);

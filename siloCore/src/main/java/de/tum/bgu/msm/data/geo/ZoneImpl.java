@@ -23,7 +23,7 @@ public class ZoneImpl implements Zone {
     private final float area_sqmi;
 
     private final Region region;
-    
+
     private SimpleFeature zoneFeature;
 
     private Development development;

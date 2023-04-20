@@ -4,6 +4,7 @@ import de.tum.bgu.msm.data.household.HouseholdDataManager;
 import de.tum.bgu.msm.data.person.Occupation;
 import de.tum.bgu.msm.data.person.Person;
 import de.tum.bgu.msm.io.output.PersonWriter;
+import de.tum.bgu.msm.run.data.person.PersonBkk;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 
@@ -27,9 +28,14 @@ public class PersonWriterBangkok implements PersonWriter {
         pwp.print("id,hhid,age,gender,relationShip,occupation,driversLicense,workplace,income");
         pwp.print(",");
         pwp.print("schoolId");
+        pwp.print(",");
+        pwp.print("schoolDistance");
+        pwp.print(",");
+        pwp.print("schoolType");
 
         pwp.println();
-        for (Person pp : householdData.getPersons()) {
+        for (Person p : householdData.getPersons()) {
+            PersonBkk pp = (PersonBkk) p;
             pwp.print(pp.getId());
             pwp.print(",");
             pwp.print(pp.getHousehold().getId());
@@ -50,10 +56,14 @@ public class PersonWriterBangkok implements PersonWriter {
             pwp.print(pp.getAnnualIncome());
             pwp.print(",");
             if (pp.getOccupation().equals(Occupation.STUDENT)){
-                pwp.print(pp.getJobId());
+                pwp.print(pp.getSchoolId());
             } else {
                 pwp.print(0);
             }
+            pwp.print(",");
+            pwp.print(pp.getSchoolDistance());
+            pwp.print(",");
+            pwp.print(pp.getSchoolType());
             pwp.println();
             if (pp.getId() == SiloUtil.trackPp) {
                 SiloUtil.trackingFile("Writing pp " + pp.getId() + " to micro data file.");

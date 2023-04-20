@@ -9,6 +9,10 @@ import de.tum.bgu.msm.syntheticPopulationGenerator.properties.PropertiesSynPop;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
+import org.osgeo.proj4j.BasicCoordinateTransform;
+import org.osgeo.proj4j.CRSFactory;
+import org.osgeo.proj4j.CoordinateReferenceSystem;
+import org.osgeo.proj4j.ProjCoordinate;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +21,7 @@ import java.util.Map;
 public class GenerateJobMicrolocation {
 
     private static final Logger logger = Logger.getLogger(GenerateJobMicrolocation.class);
-    
+
     private final DataContainer dataContainer;
     private final DataSetSynPop dataSetSynPop;
     private Map<Integer, Float> jobX = new HashMap<>();
@@ -26,7 +30,7 @@ public class GenerateJobMicrolocation {
     Map<Integer, Map<String,Map<Integer,Float>>> zoneJobTypeJobLocationArea = new HashMap<>();
     Map<Integer, Map<String,Float>> zoneJobTypeDensity = new HashMap<>();
     Map<Integer, Map<String,Integer>> jobsByJobTypeInTAZ = new HashMap<>();
-    
+
     public GenerateJobMicrolocation(DataContainer dataContainer, DataSetSynPop dataSetSynPop){
         this.dataSetSynPop = dataSetSynPop;
         this.dataContainer = dataContainer;
@@ -40,12 +44,20 @@ public class GenerateJobMicrolocation {
         logger.info("   Start Selecting the job to allocate the job");
         //Select the job to allocate the job
         int errorjob = 0;
+        CoordinateReferenceSystem fromCRS = new CRSFactory().createFromName("EPSG:4326");
+        CoordinateReferenceSystem toCRS = new CRSFactory().createFromName("EPSG:32647");
+        BasicCoordinateTransform transformer = new BasicCoordinateTransform(fromCRS,toCRS);
         for (Job jj: dataContainer.getJobDataManager().getJobs()) {
             int zoneID = jj.getZoneId();
             String jobType = jj.getType();
             Zone zone = dataContainer.getGeoData().getZones().get(zoneID);
             if (zoneJobTypeDensity.get(zoneID).get(jobType)==0.0){
-                ((JobImpl)jj).setCoordinate(zone.getRandomCoordinate(SiloUtil.getRandomObject()));
+                Coordinate coordinate = zone.getRandomCoordinate(SiloUtil.getRandomObject());
+              ProjCoordinate result = new ProjCoordinate();
+              result = transformer.transform(new ProjCoordinate(coordinate.x,coordinate.y),result);
+              Coordinate coordinate1= new Coordinate(result.x,result.y);
+                ((JobImpl)jj).setCoordinate(coordinate1);
+//                System.out.println("RANDOMLY GENERATE POINT FROM ZONE: "+zoneID + " , coordinates: "+coordinate.x+","+coordinate.y);
                 errorjob++;
                 continue;
             }
@@ -74,39 +86,25 @@ public class GenerateJobMicrolocation {
             }
             zoneJobTypeJobLocationArea.put(zone,jobLocationListForThisJobType);
         }
-        
+
         for (int row = 1; row <= PropertiesSynPop.get().main.jobLocationlist.getRowCount(); row++) {
 
             int id = (int) PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"OBJECTID");
             int zone = (int) PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"zoneID");
             float xCoordinate = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"x");
             float yCoordinate = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"y");
-            float agriArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job1");
-            float mnftArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job2");
-            float utilArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job3");
-            float consArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job4");
-            float retlArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job5");
-            float trnsArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job6");
-            float fincArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job7");
-            float rlstArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job8");
-            float admnArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job9");
-            float servArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"job10");
+            float priArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"pri");
+            float secArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"sec");
+            float terArea = PropertiesSynPop.get().main.jobLocationlist.getValueAt(row,"ter");
             jobZone.put(id,zone);
             jobX.put(id,xCoordinate);
             jobY.put(id,yCoordinate);
 
 
             if (zoneJobTypeJobLocationArea.get(zone) != null){
-                zoneJobTypeJobLocationArea.get(zone).get("Agri").put(id,agriArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Mnft").put(id,mnftArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Util").put(id,utilArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Cons").put(id,consArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Retl").put(id,retlArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Trns").put(id,trnsArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Finc").put(id,fincArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Rlst").put(id,rlstArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Admn").put(id,admnArea);
-                zoneJobTypeJobLocationArea.get(zone).get("Serv").put(id,servArea);
+                zoneJobTypeJobLocationArea.get(zone).get("pri").put(id,priArea);
+                zoneJobTypeJobLocationArea.get(zone).get("sec").put(id,secArea);
+                zoneJobTypeJobLocationArea.get(zone).get("ter").put(id,terArea);
             }
 
         }

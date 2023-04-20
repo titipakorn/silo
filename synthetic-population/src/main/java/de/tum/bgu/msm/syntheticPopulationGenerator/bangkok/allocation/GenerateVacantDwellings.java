@@ -1,12 +1,15 @@
 package de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.allocation;
 
 import de.tum.bgu.msm.container.DataContainer;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.dwelling.*;
+import de.tum.bgu.msm.data.geo.GeoData;
 import de.tum.bgu.msm.syntheticPopulationGenerator.DataSetSynPop;
 import de.tum.bgu.msm.syntheticPopulationGenerator.munich.preparation.MicroDataManager;
 import de.tum.bgu.msm.syntheticPopulationGenerator.properties.PropertiesSynPop;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.util.*;
 
@@ -69,11 +72,12 @@ public class GenerateVacantDwellings {
     }
 
     private void generateVacantDwellings(){
-
-        //for (int municipality = 1; municipality < 3; municipality++){
+//        GeoData geoData = dataContainer.getGeoData();
+//        for (int municipality = 1; municipality < 3; municipality++){
         for (int municipality : dataSetSynPop.getMunicipalities()){
             float percentageVacantDwellings = dataSetSynPop.getTazAttributes().get(municipality).get("percentageVacantDwelings");
             int vacantDwellings = (int) (percentageVacantDwellings * dataSetSynPop.getTazAttributes().get(municipality).get("households") / 100);
+//            int vacantDwellings= 10;
             List<Dwelling> dwellingForCopy = occupiedDwellings.get(municipality);
             int vacantCounter = 0;
             if (dwellingForCopy != null){
@@ -88,6 +92,10 @@ public class GenerateVacantDwellings {
                     int bedRooms = idDwellingToCopy.getBedrooms();
                     int quality = idDwellingToCopy.getQuality();
                     int price = idDwellingToCopy.getPrice();
+//                    Coordinate coordinate = null;
+//                    Zone zone = geoData.getZones().get(tazSelected);
+//                    coordinate = zone.getRandomCoordinate(SiloUtil.getRandomObject());
+
                     Dwelling dwell = DwellingUtils.getFactory().createDwelling(newDdId, tazSelected, null, -1, type, bedRooms, quality, price, year); //newDwellingId, raster cell, HH Id, ddType, bedRooms, quality, price, restriction, construction year
                     realEstateData.addDwelling(dwell);
                     dwell.setUsage(DwellingUsage.VACANT);

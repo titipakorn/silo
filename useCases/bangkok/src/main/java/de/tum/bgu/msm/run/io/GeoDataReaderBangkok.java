@@ -47,6 +47,7 @@ public class GeoDataReaderBangkok implements GeoDataReader {
                 geoDataMuc.addRegion(region);
             }
             ZoneImpl zone = new ZoneImpl(zoneIds[i], zoneAreas[i], region);
+            // logger.info("zone ID: " + zoneIds[i] + " region ID: "+regionId);
             region.addZone(zone);
             geoDataMuc.addZone(zone);
         }

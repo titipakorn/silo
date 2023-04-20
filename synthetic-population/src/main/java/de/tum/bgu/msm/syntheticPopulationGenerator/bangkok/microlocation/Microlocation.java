@@ -4,9 +4,9 @@ import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import de.tum.bgu.msm.syntheticPopulationGenerator.DataSetSynPop;
 import de.tum.bgu.msm.syntheticPopulationGenerator.ModuleSynPop;
-import de.tum.bgu.msm.syntheticPopulationGenerator.munich.microlocation.GenerateDwellingMicrolocation;
-import de.tum.bgu.msm.syntheticPopulationGenerator.munich.microlocation.GenerateJobMicrolocation;
-import de.tum.bgu.msm.syntheticPopulationGenerator.munich.microlocation.GenerateSchoolMicrolocation;
+import de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.microlocation.GenerateDwellingMicrolocation;
+import de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.microlocation.GenerateJobMicrolocation;
+import de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.microlocation.GenerateSchoolMicrolocation;
 import de.tum.bgu.msm.syntheticPopulationGenerator.properties.PropertiesSynPop;
 import org.apache.log4j.Logger;
 import org.matsim.core.utils.gis.ShapeFileReader;
@@ -28,7 +28,7 @@ public class Microlocation extends ModuleSynPop {
     public void run(){
         logger.info("   Started microlocation model.");
 
-        String zoneShapeFile = Properties.get().geo.zoneShapeFile;
+        String zoneShapeFile = PropertiesSynPop.get().main.zoneShapeFile;
         Map<Integer, SimpleFeature> zoneFeatureMap = new HashMap<>();
         for (SimpleFeature feature: ShapeFileReader.getAllFeatures(zoneShapeFile)) {
             int zoneId = Integer.parseInt(feature.getAttribute("ZONE").toString());
@@ -37,8 +37,8 @@ public class Microlocation extends ModuleSynPop {
         dataSetSynPop.setZoneFeatureMap(zoneFeatureMap);
 
         if (PropertiesSynPop.get().main.runMicrolocation) {
-            generateDwellingMicrolocation();
-            generateJobMicrolocation();
+//            generateDwellingMicrolocation();
+//            generateJobMicrolocation();
             generateSchoolMicrolocation();
         }
 

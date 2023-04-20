@@ -120,6 +120,8 @@ public final class MatsimTransportModel implements TransportModel {
 
     private void runTransportModel(int year) {
         logger.warn("Running MATSim transport model for year " + year + ".");
+        //config pt when testing with sub sample for 10%
+//        initialMatsimConfig.qsim().setPcuThresholdForFlowCapacityEasing( 0.1 );
         Scenario assembledScenario = ScenarioUtils.createScenario(initialMatsimConfig);
         TravelTimes travelTimes = dataContainer.getTravelTimes();
 

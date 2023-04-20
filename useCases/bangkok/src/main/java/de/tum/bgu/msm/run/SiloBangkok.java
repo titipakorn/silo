@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.output.ModalSharesResultMonitor;
 import de.tum.bgu.msm.io.output.MultiFileResultsMonitor;
 import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.utils.SiloUtil;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigUtils;
@@ -31,7 +32,7 @@ public class SiloBangkok {
             config = ConfigUtils.loadConfig(args[1]);
         }
         logger.info("Started SILO land use model for the Bangkok Metropolitan Area");
-        DefaultDataContainer dataContainer = DataBuilderBangkok.getModelDataForBangkok(properties, config);
+        DataContainerWithSchools dataContainer = DataBuilderBangkok.getModelDataForBangkok(properties, config);
         DataBuilderBangkok.read(properties, dataContainer);
         ModelContainer modelContainer = ModelBuilderBangkok.getModelContainerForBangkok(dataContainer, properties, config);
 

@@ -20,12 +20,13 @@ import de.tum.bgu.msm.io.MicroDataScaler;
 import de.tum.bgu.msm.io.input.*;
 import de.tum.bgu.msm.matsim.MatsimTravelTimesAndCosts;
 import de.tum.bgu.msm.properties.Properties;
+import de.tum.bgu.msm.schools.*;
 import org.matsim.core.config.Config;
 
 public class DataBuilderTak {
 
 
-    public static DataContainer getTakModelData(Properties properties, Config config) {
+    public static DataContainerWithSchools getTakModelData(Properties properties, Config config) {
 
         HouseholdData householdData = new HouseholdDataImpl();
         JobData jobData = new JobDataImpl();
@@ -69,14 +70,14 @@ public class DataBuilderTak {
                 hhFactory, properties, realEstateDataManager);
 
         //for the time being not required
-//        SchoolData schoolData = new SchoolDataImpl(geoData, dwellingData, properties);
+        SchoolData schoolData = new SchoolDataImpl(geoData, dwellingData, properties);
 
-        return new DefaultDataContainer(geoData, realEstateDataManager, jobDataManager,
-                householdDataManager, travelTimes, accessibility, commutingTimeProbability, properties);
+        return new DataContainerWithSchoolsImpl(geoData, realEstateDataManager, jobDataManager,
+                householdDataManager, travelTimes, accessibility, commutingTimeProbability,schoolData, properties);
 
     }
 
-    public static void read(Properties properties, DataContainer dataContainer) {
+    public static void read(Properties properties, DataContainerWithSchools dataContainer) {
         GeoDataReader reader = new GeoDataReaderTak(dataContainer.getGeoData());
         String fileName = properties.main.baseDirectory + properties.geo.zonalDataFile;
         String pathShp = properties.main.baseDirectory + properties.geo.zoneShapeFile;
@@ -103,6 +104,10 @@ public class DataBuilderTak {
         JobReader jjReader = new DefaultJobReader(dataContainer.getJobDataManager());
         String jobsFile = properties.main.baseDirectory + properties.jobData.jobsFileName + "_" + year + ".csv";
         jjReader.readData(jobsFile);
+
+        SchoolReader ssReader = new SchoolReaderImpl(dataContainer.getSchoolData());
+        String schoolsFile = properties.main.baseDirectory + properties.schoolData.schoolsFileName + "_" + year + ".csv";
+        ssReader.readData(schoolsFile);
 
         MicroDataScaler microDataScaler = new MicroDataScaler(dataContainer, properties);
         microDataScaler.scale();

@@ -71,8 +71,8 @@ public class SyntheticPopBK implements SyntheticPopI {
         logger.info("Running Module: Allocation");
         new Allocation(dataSetSynPop, dataContainer).run();
 
-        logger.info("Running Module: Microlocation");
-        //new Microlocation(dataSetSynPop,dataContainer).run();
+        logger.info("PRINCE Running Module: Microlocation");
+        new Microlocation(dataSetSynPop,dataContainer).run();
 
         logger.info("Summary of the synthetic population");
         summarizeData(dataContainer);

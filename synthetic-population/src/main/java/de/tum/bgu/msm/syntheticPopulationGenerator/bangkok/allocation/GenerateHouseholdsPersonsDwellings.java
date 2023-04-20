@@ -15,10 +15,7 @@ import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class GenerateHouseholdsPersonsDwellings {
@@ -60,6 +57,7 @@ public class GenerateHouseholdsPersonsDwellings {
         householdData = dataContainer.getHouseholdDataManager();
         realEstate = dataContainer.getRealEstateDataManager();
         firstHouseholdMunicipality = 1;
+//      for (int municipality = 1; municipality < 3; municipality++){
         for (int municipality : dataSetSynPop.getMunicipalities()){
             initializeMunicipalityData(municipality);
             double logging = 2;
@@ -215,6 +213,7 @@ public class GenerateHouseholdsPersonsDwellings {
         }
         pw.println(header);
         AtomicReference<String> zoneStr = new AtomicReference<>("");
+//      for (int municipality = 1; municipality < 3; municipality++){
         for (int municipality : dataSetSynPop.getMunicipalities()) {
             zoneStr.set(Integer.toString(municipality));
             for (Double value : zonalSummary.get(municipality).values()) {
@@ -231,6 +230,7 @@ public class GenerateHouseholdsPersonsDwellings {
         }
         pw1.println(header1);
         AtomicReference<String> zoneStr1 = new AtomicReference<>("");
+//      for (int municipality = 1; municipality < 3; municipality++){
         for (int municipality : dataSetSynPop.getMunicipalities()) {
             zoneStr1.set(Integer.toString(municipality));
             for (Double value : allocationErrors.get(municipality).values()) {
@@ -255,7 +255,7 @@ public class GenerateHouseholdsPersonsDwellings {
     private void generatePersons(int hhSelected, Household hh){
 
         int hhSize = (int) dataSetSynPop.getHouseholdDataSet().getValueAt(hhSelected, "hhSize");
-        PersonFactory factory = PersonUtils.getFactory();
+        PersonFactory factory = householdData.getPersonFactory();
         for (int person = 0; person < hhSize; person++) {
             int id = householdData.getNextPersonId();
             int personSelected = (int) dataSetSynPop.getHouseholdDataSet().getValueAt(hhSelected, "id_firstPerson") + person;
@@ -267,11 +267,28 @@ public class GenerateHouseholdsPersonsDwellings {
             boolean license = MicroDataManager.obtainLicense(gender, age);
             int educationDegree = 1;
             PersonRole personRole = translatePersonRole((int)dataSetSynPop.getPersonDataSet().getValueAt(personSelected, "personRole"));
-            int school = 1;
-            Person pers = factory.createPerson(id, age, gender, occupation,personRole, 0, income); //(int id, int age, int gender, Race race, int occupation, int workplace, int income)
+//            int school = 1;
+            PersonMuc pers = (PersonMuc) factory.createPerson(id, age, gender, occupation,personRole, 0, income); //(int id, int age, int gender, Race race, int occupation, int workplace, int income)
             //pers.setNationality(nationality1);
             pers.setDriverLicense(license);
-           // pers.setSchoolType(school);
+//            pers.setSchoolType(school);
+            final Random random = SiloUtil.getRandomObject();
+            //https://www.statistik.bayern.de/mam/produkte/veroffentlichungen/statistische_berichte/a1310c_201100_36422.pdf
+            if(age<12) {
+              if(occupation == Occupation.STUDENT) {
+                pers.setSchoolType(1);
+              }
+            }
+          if(age>=12 && age<18) {
+            if(occupation == Occupation.STUDENT) {
+              pers.setSchoolType(2);
+            }
+          }
+            if(age>=18 && random.nextDouble()<0.7) {
+              if(occupation == Occupation.STUDENT) {
+                pers.setSchoolType(3);
+              }
+            }
             householdData.addPerson(pers);
             householdData.addPersonToHousehold(pers, hh);
             educationalLevel.put(pers, educationDegree);
@@ -436,7 +453,7 @@ public class GenerateHouseholdsPersonsDwellings {
 
         logger.info("   Municipality " + municipality + ". Starting to generate households and persons");
         totalHouseholds = (int) PropertiesSynPop.get().main.marginalsMunicipality.getIndexedValueAt(municipality, "households");
-
+//        totalHouseholds= 10;
         probMicroData = new HashMap<>();
         probabilityId = new double[dataSetSynPop.getWeights().getRowCount()];
         ids = new int[probabilityId.length];

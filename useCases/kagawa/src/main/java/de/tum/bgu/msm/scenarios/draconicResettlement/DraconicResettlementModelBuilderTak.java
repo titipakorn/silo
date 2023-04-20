@@ -50,6 +50,7 @@ import de.tum.bgu.msm.models.relocation.migration.InOutMigrationImpl;
 import de.tum.bgu.msm.models.relocation.moves.*;
 import de.tum.bgu.msm.models.transportModel.TransportModel;
 import de.tum.bgu.msm.properties.Properties;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.core.config.Config;
@@ -57,7 +58,7 @@ import org.matsim.core.scenario.ScenarioUtils;
 
 public class DraconicResettlementModelBuilderTak {
 
-    public static ModelContainer getModelContainerForTak(DataContainer dataContainer, Properties properties, Config config) {
+    public static ModelContainer getModelContainerForTak(DataContainerWithSchools dataContainer, Properties properties, Config config) {
 
         PersonFactory ppFactory = dataContainer.getHouseholdDataManager().getPersonFactory();
         HouseholdFactory hhFactory = dataContainer.getHouseholdDataManager().getHouseholdFactory();

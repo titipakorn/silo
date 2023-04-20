@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.output.HouseholdSatisfactionMonitor;
 import de.tum.bgu.msm.io.output.MultiFileResultsMonitor;
 import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.run.DataBuilderTak;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
@@ -32,7 +33,7 @@ public class DraconicResettlementTakRun {
             config = ConfigUtils.loadConfig(args[1]);
         }
         logger.info("Started SILO land use model for the Munich Metropolitan Area");
-        DataContainer dataContainer = DataBuilderTak.getTakModelData(properties, config);
+        DataContainerWithSchools dataContainer = DataBuilderTak.getTakModelData(properties, config);
         DataBuilderTak.read(properties, dataContainer);
         ModelContainer modelContainer = DraconicResettlementModelBuilderTak.getModelContainerForTak(dataContainer, properties, config);
 

@@ -20,15 +20,18 @@ import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.run.data.dwelling.BangkokDwellingTypes;
 import de.tum.bgu.msm.run.data.jobs.BangkokJobFactory;
 import de.tum.bgu.msm.run.io.GeoDataReaderBangkok;
+import de.tum.bgu.msm.run.io.PersonReaderBkk;
+import de.tum.bgu.msm.run.models.HouseholdDataManagerBkkImpl;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.matsim.core.config.Config;
+import de.tum.bgu.msm.schools.*;
 
 public class DataBuilderBangkok {
 
     private DataBuilderBangkok() {
     }
 
-    public static DefaultDataContainer getModelDataForBangkok(Properties properties, Config config) {
+    public static DataContainerWithSchools getModelDataForBangkok(Properties properties, Config config) {
 
         HouseholdData householdData = new HouseholdDataImpl();
         JobData jobData = new JobDataImpl();
@@ -75,16 +78,18 @@ public class DataBuilderBangkok {
 
 
         final HouseholdFactory hhFactory = new HouseholdFactoryImpl();
-        HouseholdDataManager householdDataManager = new HouseholdDataManagerImpl(
+        HouseholdDataManager householdDataManager = new HouseholdDataManagerBkkImpl(
                 householdData, dwellingData, new PersonFactoryImpl(),
                 hhFactory, properties, realEstateDataManager);
 
+        //add school
+        SchoolData schoolData = new SchoolDataImpl(geoData, dwellingData, properties);
 
-        return new DefaultDataContainer(geoData, realEstateDataManager, jobDataManager, householdDataManager, travelTimes, accessibility,
-                commutingTimeProbability, properties);
+        return new DataContainerWithSchoolsImpl(geoData, realEstateDataManager, jobDataManager, householdDataManager, travelTimes, accessibility,
+                commutingTimeProbability,schoolData, properties);
     }
 
-    static public void read(Properties properties, DefaultDataContainer dataContainer){
+    static public void read(Properties properties, DataContainerWithSchools dataContainer){
 
         GeoDataReader reader = new GeoDataReaderBangkok(dataContainer.getGeoData());
         String pathShp = properties.main.baseDirectory + properties.geo.zoneShapeFile;
@@ -100,7 +105,7 @@ public class DataBuilderBangkok {
 
         String personFile = properties.main.baseDirectory + properties.householdData.personFileName;
         personFile += "_" + year + ".csv";
-        PersonReader personReader = new DefaultPersonReader(dataContainer.getHouseholdDataManager());
+        PersonReader personReader = new PersonReaderBkk(dataContainer.getHouseholdDataManager());
         personReader.readData(personFile);
 
         DwellingReader ddReader = new DefaultDwellingReader(dataContainer.getRealEstateDataManager());
@@ -111,6 +116,11 @@ public class DataBuilderBangkok {
         JobReader jjReader = new DefaultJobReader(dataContainer.getJobDataManager());
         String jobsFile = properties.main.baseDirectory + properties.jobData.jobsFileName + "_" + year + ".csv";
         jjReader.readData(jobsFile);
+
+        //add school
+        SchoolReader ssReader = new SchoolReaderImpl(dataContainer.getSchoolData());
+        String schoolsFile = properties.main.baseDirectory + properties.schoolData.schoolsFileName + "_" + year + ".csv";
+        ssReader.readData(schoolsFile);
 
         MicroDataScaler microDataScaler = new MicroDataScaler(dataContainer, properties);
         microDataScaler.scale();

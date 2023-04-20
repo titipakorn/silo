@@ -8,6 +8,7 @@ import de.tum.bgu.msm.io.output.MultiFileResultsMonitor;
 import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.run.DataBuilderTak;
 import de.tum.bgu.msm.scenarios.longCommutePenalty.LongCommutePenaltyModelBuilderTak;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
@@ -26,7 +27,7 @@ public class RunCoreCityDevelopmentTak {
             config = ConfigUtils.loadConfig(args[1]);
         }
         logger.info("Started SILO land use model for Takamatsu (Kagawa). Scenario: One car policy.");
-        DataContainer dataContainer = DataBuilderTak.getTakModelData(properties, config);
+        DataContainerWithSchools dataContainer = DataBuilderTak.getTakModelData(properties, config);
         DataBuilderTak.read(properties, dataContainer);
         ModelContainer modelContainer = CoreCityDevelopmentModelBuilderTak.getTakModels(
                 dataContainer, properties, config);

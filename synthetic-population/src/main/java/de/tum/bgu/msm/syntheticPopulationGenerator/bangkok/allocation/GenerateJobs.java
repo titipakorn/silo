@@ -1,12 +1,15 @@
 package de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.allocation;
 
 import de.tum.bgu.msm.container.DataContainer;
+import de.tum.bgu.msm.data.Zone;
+import de.tum.bgu.msm.data.geo.GeoData;
 import de.tum.bgu.msm.data.job.JobDataManager;
 import de.tum.bgu.msm.data.job.JobUtils;
 import de.tum.bgu.msm.syntheticPopulationGenerator.DataSetSynPop;
 import de.tum.bgu.msm.syntheticPopulationGenerator.properties.PropertiesSynPop;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +29,7 @@ public class GenerateJobs {
     }
 
     public void run(){
-        logger.info("   Running module: job generation");
+        logger.info(" PRINCE  Running module: job generation");
         for (int municipality : dataSetSynPop.getMunicipalities()){
             for (String jobType : PropertiesSynPop.get().main.jobStringType) {
                 if (PropertiesSynPop.get().main.cellsMatrix.getIndexedValueAt(municipality, jobType) > 0.1) {
@@ -39,6 +42,7 @@ public class GenerateJobs {
 
 
     private void generateJobsByTypeAtMunicipalityWithReplacement(int municipality, String jobType){
+//        GeoData geoData = dataContainer.getGeoData();
         JobDataManager jobData = dataContainer.getJobDataManager();
             int totalJobs = (int) PropertiesSynPop.get().main.cellsMatrix.getIndexedValueAt(municipality, jobType);
             totalJobs = (int) Math.round(totalJobs * PropertiesSynPop.get().main.jobScaler);
@@ -50,6 +54,10 @@ public class GenerateJobs {
                 } else {
                     jobsByTaz.remove(tazSelected);
                 }
+//                Coordinate coordinate = null;
+//                Zone zone = geoData.getZones().get(tazSelected);
+//                coordinate = zone.getRandomCoordinate(SiloUtil.getRandomObject());
+//                System.out.println("RANDOM LOCATION OF JOB " +id +" is "+coordinate.x +","+coordinate.y);
                 jobData.addJob(JobUtils.getFactory().createJob(id, tazSelected, null, -1, jobType));
             }
 

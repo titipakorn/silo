@@ -21,6 +21,7 @@ import de.tum.bgu.msm.data.dwelling.Dwelling;
 import de.tum.bgu.msm.data.dwelling.DwellingData;
 import de.tum.bgu.msm.data.geo.GeoData;
 import de.tum.bgu.msm.data.person.Person;
+import de.tum.bgu.msm.io.output.DefaultHouseholdWriter;
 import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
@@ -44,7 +45,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SchoolDataImpl implements SchoolData {
 
     private final static Logger logger = Logger.getLogger(SchoolDataImpl.class);
-    private static final int MIN_SECONDARY_AGE = 10;
+
+    private static final int MIN_PRIMARY_AGE = 6;
+    private static final int MIN_SECONDARY_AGE = 11;
     private static final int MIN_TERTIARY_AGE = 18;
 
     private final GeoData geoData;
@@ -142,6 +145,28 @@ public class SchoolDataImpl implements SchoolData {
         }
     }
 
+  @Override
+  public Collection<School> getNearSchool(Person person, int schoolType, double distance) {
+    Dwelling dwelling = dwellingData.getDwelling(person.getHousehold().getDwellingId());
+
+    Coordinate coordinate;
+    if (dwelling != null) {
+      coordinate = dwelling.getCoordinate();
+    } else{
+      coordinate = geoData.getZones().get(dwelling.getZoneId()).getRandomCoordinate(SiloUtil.getRandomObject());
+    }
+    switch (schoolType){
+      case 1:
+        return primarySearchTree.getDisk(coordinate.x,coordinate.y, distance);
+      case 2:
+        return secondarySearchTree.getDisk(coordinate.x,coordinate.y,distance);
+      case 3:
+        return tertiarySearchTree.getDisk(coordinate.x,coordinate.y, distance);
+      default:
+        throw new IllegalArgumentException(String.format("schoolType %d not valid.", schoolType));
+    }
+  }
+
     @Override
     public void removeSchool(int id) {
 
@@ -188,13 +213,36 @@ public class SchoolDataImpl implements SchoolData {
 
     }
 
-    @Override
+  @Override
     public void endYear(int year) {
 
+      final String outputDirectory = properties.main.baseDirectory + "scenOutput/" + properties.main.scenarioName;
+
+      if (!properties.schoolData.schoolsFileName.equals("")) {
+        String fileee = outputDirectory + "/"
+          + properties.schoolData.schoolsFileName
+          + "_"
+          + year
+          + ".csv";
+        SchoolsWriter eewriter = new SchoolsWriter(this);
+        eewriter.writeSchools(fileee);
+      }
     }
 
     @Override
     public void endSimulation() {
+      final String outputDirectory = properties.main.baseDirectory + "scenOutput/" + properties.main.scenarioName;
+
+      if (!properties.schoolData.schoolsFileName.equals("")) {
+        String fileee = outputDirectory + "/"
+          + properties.schoolData.schoolsFileName
+          + "_"
+          + properties.main.endYear
+          + ".csv";
+        SchoolsWriter eewriter = new SchoolsWriter(this);
+        eewriter.writeSchools(fileee);
+      }
+
 
     }
 }

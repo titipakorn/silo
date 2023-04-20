@@ -19,6 +19,10 @@ import de.tum.bgu.msm.data.travelTimes.TravelTimes;
 import de.tum.bgu.msm.io.input.*;
 import de.tum.bgu.msm.matsim.MatsimTravelTimesAndCosts;
 import de.tum.bgu.msm.properties.Properties;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
+import de.tum.bgu.msm.schools.DataContainerWithSchoolsImpl;
+import de.tum.bgu.msm.schools.SchoolData;
+import de.tum.bgu.msm.schools.SchoolDataImpl;
 import org.matsim.core.config.Config;
 
 public class DataBuilderFabiland {
@@ -26,7 +30,7 @@ public class DataBuilderFabiland {
     private DataBuilderFabiland() {
     }
 
-    public static DataContainer buildDataContainer(Properties properties, Config config) {
+    public static DataContainerWithSchools buildDataContainer(Properties properties, Config config) {
 
         GeoData geoData = new DefaultGeoData();
 
@@ -76,10 +80,14 @@ public class DataBuilderFabiland {
                 ppFactory, hhFactory,
                 properties, realEstateManager);
 
-        DataContainer dataContainer = new DefaultDataContainer(
+        //add school
+        SchoolData schoolData = new SchoolDataImpl(geoData, dwellingData, properties);
+
+        DataContainerWithSchools dataContainer = new DataContainerWithSchoolsImpl(
                 geoData, realEstateManager,
                 jobManager, householdManager,
-                travelTimes, accessibility, commutingTimeProbability, properties);
+                travelTimes, accessibility, commutingTimeProbability, schoolData,properties);
+
         return dataContainer;
     }
 

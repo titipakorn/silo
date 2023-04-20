@@ -6,6 +6,7 @@ import de.tum.bgu.msm.container.ModelContainer;
 import de.tum.bgu.msm.data.dwelling.DwellingType;
 import de.tum.bgu.msm.io.output.*;
 import de.tum.bgu.msm.properties.Properties;
+import de.tum.bgu.msm.schools.DataContainerWithSchools;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.matsim.core.config.Config;
@@ -30,7 +31,7 @@ public class SiloTak {
             config = ConfigUtils.loadConfig(args[1]);
         }
         logger.info("Started SILO land use model for Takamatsu (Kagawa)");
-        DataContainer dataContainer = DataBuilderTak.getTakModelData(properties, config);
+        DataContainerWithSchools dataContainer = DataBuilderTak.getTakModelData(properties, config);
         DataBuilderTak.read(properties, dataContainer);
         ModelContainer modelContainer = ModelBuilderTak.getTakModels(
                 dataContainer, properties, config);

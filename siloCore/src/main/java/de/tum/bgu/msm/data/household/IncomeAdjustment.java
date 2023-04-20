@@ -15,8 +15,8 @@ public class IncomeAdjustment extends RandomizableConcurrentFunction<Void> {
     private final float[][][] initialIncomeDistribution;
 
 
-    IncomeAdjustment(Person person, float meanIncomeChange,
-                     float[][][] currentIncomeDistribution, float[][][] initialIncomeDistribution) {
+    public IncomeAdjustment(Person person, float meanIncomeChange,
+                            float[][][] currentIncomeDistribution, float[][][] initialIncomeDistribution) {
         super(SiloUtil.getRandomObject().nextLong());
         this.person = person;
         this.meanIncomeChange = meanIncomeChange;

@@ -25,8 +25,8 @@
 		<param name="trafficDynamics" value="withHoles" />
 		<!-- Note that this setting is independent from the "global" threads setting -->
 		<param name="numberOfThreads" value="1" />
-		<param name="flowCapacityFactor" value="0.01" />
-		<param name="storageCapacityFactor" value="0.01" />
+		<param name="flowCapacityFactor" value="0.1" />
+		<param name="storageCapacityFactor" value="0.1" />
 	</module>
 
 	<module name="parallelEventHandling" >
@@ -42,6 +42,18 @@
 			<param name="activityType" value="work" />
 			<param name="typicalDuration" value="08:00:00" />
 		</parameterset>
+    <parameterset type="activityParams" >
+      <param name="activityType" value="school" />
+      <param name="typicalDuration" value="08:00:00" />
+    </parameterset>
+    <parameterset type="activityParams" >
+      <param name="activityType" value="accompanyingToSchool" />
+      <param name="typicalDuration" value="00:05:00" />
+    </parameterset>
+    <parameterset type="activityParams" >
+      <param name="activityType" value="accompanyingFromSchool" />
+      <param name="typicalDuration" value="00:05:00" />
+    </parameterset>
 	</module>
 
 	<module name="strategy" >

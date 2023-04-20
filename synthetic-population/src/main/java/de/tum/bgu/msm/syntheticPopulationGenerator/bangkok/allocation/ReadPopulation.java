@@ -1,10 +1,12 @@
 package de.tum.bgu.msm.syntheticPopulationGenerator.bangkok.allocation;
 
 import de.tum.bgu.msm.container.DataContainer;
+import de.tum.bgu.msm.data.Zone;
 import de.tum.bgu.msm.data.dwelling.DefaultDwellingTypes;
 import de.tum.bgu.msm.data.dwelling.Dwelling;
 import de.tum.bgu.msm.data.dwelling.DwellingUtils;
 import de.tum.bgu.msm.data.dwelling.RealEstateDataManager;
+import de.tum.bgu.msm.data.geo.GeoData;
 import de.tum.bgu.msm.data.household.Household;
 import de.tum.bgu.msm.data.household.HouseholdDataManager;
 import de.tum.bgu.msm.data.household.HouseholdFactory;
@@ -14,6 +16,8 @@ import de.tum.bgu.msm.data.job.JobMuc;
 import de.tum.bgu.msm.data.person.*;
 import de.tum.bgu.msm.properties.Properties;
 import de.tum.bgu.msm.run.data.dwelling.BangkokDwellingTypes;
+import de.tum.bgu.msm.run.data.person.PersonBkk;
+import de.tum.bgu.msm.run.data.person.PersonFactoryBkk;
 import de.tum.bgu.msm.utils.SiloUtil;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
@@ -116,7 +120,7 @@ public class ReadPopulation {
 
 
             // read line
-            PersonFactoryMuc ppFactory = new PersonFactoryMuc();;
+            PersonFactoryBkk ppFactory = new PersonFactoryBkk();;
             while ((recString = in.readLine()) != null) {
                 recCount++;
                 String[] lineElements = recString.split(",");
@@ -129,7 +133,7 @@ public class ReadPopulation {
                 Occupation occupation = Occupation.valueOf(Integer.parseInt(lineElements[posOccupation]));
                 int workplace  = Integer.parseInt(lineElements[posWorkplace]);
                 int income     = Integer.parseInt(lineElements[posIncome]);
-                PersonMuc pp = (PersonMuc) ppFactory.createPerson(id, age, gender, occupation, pr, workplace, income); //this automatically puts it in id->person map in Person class
+                PersonBkk pp = (PersonBkk) ppFactory.createPerson(id, age, gender, occupation, pr, workplace, income); //this automatically puts it in id->person map in Person class
                 householdData.addPerson(pp);
                 householdData.addPersonToHousehold(pp, householdData.getHouseholdFromId(hhid));
                 String licenseStr = lineElements[posLicense];
@@ -221,6 +225,7 @@ public class ReadPopulation {
         logger.info("Reading job micro data from ascii file");
 
         JobDataManager jobDataManager = dataContainer.getJobDataManager();
+//        GeoData geoData = dataContainer.getGeoData();
         JobFactoryMuc jobFactory = (JobFactoryMuc) dataContainer.getJobDataManager().getFactory();
         String fileName = Properties.get().main.baseDirectory + Properties.get().jobData.jobsFileName;
         fileName += "_" + year + ".csv";
@@ -252,6 +257,8 @@ public class ReadPopulation {
                 int worker  = Integer.parseInt(lineElements[posWorker]);
                 String type = lineElements[posType].replace("\"", "");
                 Coordinate coordinate = null;
+//                Zone zone = geoData.getZones().get(zoneId);
+//                coordinate = zone.getRandomCoordinate(SiloUtil.getRandomObject());
                 if (posCoordX >= 0 && posCoordY >= 0) {
                     try {
                         coordinate = new Coordinate(Double.parseDouble(lineElements[posCoordX]), Double.parseDouble(lineElements[posCoordY]));
