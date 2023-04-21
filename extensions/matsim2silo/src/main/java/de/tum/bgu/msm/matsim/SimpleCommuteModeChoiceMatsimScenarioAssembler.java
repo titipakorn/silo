@@ -45,10 +45,10 @@ public class SimpleCommuteModeChoiceMatsimScenarioAssembler implements MatsimSce
   private Map<Integer, Boolean> selected_households;
 
   //for school time shift
-//  private static final int START_SCHOOL_TIME = 8*3600;
-  private static final int START_SCHOOL_TIME = 10*3600;
-//  private static final int END_SCHOOL_TIME = 16*3600;
-  private static final int END_SCHOOL_TIME = 18*3600;
+  private static final int START_SCHOOL_TIME = 8*3600;
+//  private static final int START_SCHOOL_TIME = 10*3600;
+  private static final int END_SCHOOL_TIME = 16*3600;
+//  private static final int END_SCHOOL_TIME = 18*3600;
 
   private static final int START_WORK_TIME = 8*3600+ (3600/2);
   private static final int END_WORK_TIME = 17*3600+ (3600/2);
@@ -297,7 +297,7 @@ public class SimpleCommuteModeChoiceMatsimScenarioAssembler implements MatsimSce
     Activity homeActivityMorning = populationFactory.createActivityFromCoord("home", dwellingCoord);
     Integer jobStartTime = defineDepartureFromHome(job);
     //school shift for parent to escorting
-    jobStartTime+=2*3600;
+//    jobStartTime+=2*3600;
 
     Coordinate home_location = new Coordinate(dwellingCoord.getX(),dwellingCoord.getY());
     Coordinate job_location = new Coordinate(jobCoord.getX(),jobCoord.getY());
@@ -413,10 +413,10 @@ public class SimpleCommuteModeChoiceMatsimScenarioAssembler implements MatsimSce
     Integer jobStartTime = defineDepartureFromHome(job);
 
     // work time shift
-    if (SiloUtil.getRandomObject().nextDouble() <= 0.3) {
-      Integer rand_diff = (int)((SiloUtil.getRandomObject().nextDouble() * 2 - 1)*2*3600);
-      jobStartTime+=rand_diff;
-    }
+//    if (SiloUtil.getRandomObject().nextDouble() <= 0.3) {
+//      Integer rand_diff = (int)((SiloUtil.getRandomObject().nextDouble() * 2 - 1)*2*3600);
+//      jobStartTime+=rand_diff;
+//    }
 
     Integer jobEndTime = defineWorkEndTime(job, jobStartTime);
 
